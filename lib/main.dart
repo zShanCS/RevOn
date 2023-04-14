@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:revon/blurred_background.dart';
 import 'package:share/share.dart';
+import 'package:revon/models.dart';
+import 'package:revon/blurred_background.dart';
+import 'package:revon/book_detail.dart';
 
 void main() {
   runApp(BookReviewsApp());
@@ -83,6 +86,30 @@ class _BookListScreenState extends State<BookListScreen> {
     Book('1984', 'George Orwell',
         'https://images-na.ssl-images-amazon.com/images/I/71aFt4+OTOL.jpg', [
       Review(4.0, 'A chilling and thought-provoking book.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+    ]),
+    Book('The Prophecy', 'George Orwell',
+        'https://m.media-amazon.com/images/I/51XXwdv2twL.jpg', [
+      Review(4.0, 'A chilling and thought-provoking book.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0, 'One of the best books I have ever read.'),
+      Review(5.0,
+          'One of the best books I have ever read.One of the best books I have ever read.One of the best books I have ever read.One of the best books I have ever read.One of the best books I have ever read.One of the best books I have ever read.'),
       Review(5.0, 'One of the best books I have ever read.'),
     ]),
     Book(
@@ -192,9 +219,6 @@ class _BookListScreenState extends State<BookListScreen> {
               fit: BoxFit.cover,
             ),
           ),
-          SizedBox(
-            height: 100,
-          ),
           GridView.builder(
             padding: EdgeInsets.fromLTRB(16, 100, 16, 16),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -225,158 +249,6 @@ class _BookListScreenState extends State<BookListScreen> {
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-class Book {
-  final String title;
-  final String author;
-  final String imageUrl;
-  final List<Review> reviews;
-
-  Book(this.title, this.author, this.imageUrl, this.reviews);
-
-  double get averageRating {
-    if (reviews.isEmpty) {
-      return 0;
-    }
-    double totalRating =
-        reviews.map((review) => review.rating).reduce((a, b) => a + b);
-    return totalRating / reviews.length;
-  }
-}
-
-class Review {
-  final double rating;
-  final String text;
-
-  Review(this.rating, this.text);
-}
-
-class BookDetail extends StatefulWidget {
-  final Book book;
-  BookDetail({required this.book});
-
-  @override
-  State<BookDetail> createState() => _BookDetailState();
-}
-
-class _BookDetailState extends State<BookDetail> {
-  final _scrollController = ScrollController();
-
-  final double _appBarMaxOpacity = 0.8;
-
-  final double _appBarMinOpacity = 0.0;
-
-  double _appBarOpacity = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    setState(() {
-      _appBarOpacity = (_scrollController.offset / 100)
-          .clamp(_appBarMinOpacity, _appBarMaxOpacity);
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(
-          '${widget.book.title}',
-        ),
-        elevation: 0.0,
-        backgroundColor: Colors.black.withOpacity(_appBarOpacity),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Share.share('${widget.book.title} by ${widget.book.author}');
-              },
-              icon: Icon(Icons.share))
-        ],
-      ),
-      body: BlurredBackground(
-        img: widget.book.imageUrl,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                margin: EdgeInsets.only(top: 100),
-                height: 300,
-                width: 200,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.book.imageUrl,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Text(
-                        widget.book.title,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 0),
-                    Center(
-                      child: Text(
-                        '${widget.book.author}',
-                        style: TextStyle(fontSize: 18),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                  ],
-                ),
-              ),
-              Text(
-                'Reviews',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              ListView.builder(
-                padding: EdgeInsets.only(top: 0),
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: widget.book.reviews.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text('${widget.book.reviews[index].rating} stars'),
-                    subtitle: Text(widget.book.reviews[index].text),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
