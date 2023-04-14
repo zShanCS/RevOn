@@ -77,8 +77,19 @@ class _BookListScreenState extends State<BookListScreen> {
 
   List<Book> filteredBooks = [];
   bool searchVisible = false;
+  final FocusNode _searchFocusNode = FocusNode();
 
   TextEditingController searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _focusOnSearch() {
+    FocusScope.of(context).requestFocus(_searchFocusNode);
+  }
 
   @override
   void initState() {
@@ -94,6 +105,14 @@ class _BookListScreenState extends State<BookListScreen> {
           IconButton(
               onPressed: () {
                 setState(() {
+                  if (searchVisible) {
+                    //search was visible before => means we are closing search now => reset filter.
+                    searchController.clear();
+                    filteredBooks = books;
+                  } else {
+                    //search was not visible => means we openend the search => bring search box into focus
+                    _focusOnSearch();
+                  }
                   searchVisible = !searchVisible;
                 });
               },
@@ -109,6 +128,7 @@ class _BookListScreenState extends State<BookListScreen> {
               visible: searchVisible,
               child: Expanded(
                 child: TextField(
+                  focusNode: _searchFocusNode,
                   controller: searchController,
                   decoration: InputDecoration(
                     hintText: 'Search by book or author',
@@ -311,7 +331,10 @@ class BookDetail extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text('Book Detail'),
+        title: Text(
+          '${book.title}',
+        ),
+        elevation: 0.0,
       ),
       body: BlurredBackground(
         img: book.imageUrl,
