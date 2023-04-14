@@ -39,6 +39,22 @@ class BookListScreen extends StatefulWidget {
 
 class _BookListScreenState extends State<BookListScreen> {
   final List<Book> books = [
+    Book(
+      'The Great Gatsby',
+      'F. Scott',
+      'https://i0.wp.com/americanwritersmuseum.org/wp-content/uploads/2018/02/CK-3.jpg?resize=267%2C400&ssl=1',
+      [
+        Review(3.9, 'Best Book Ever'),
+        Review(3.9, 'Best Book Ever'),
+        Review(3.9, 'Best Book Ever'),
+        Review(3.9, 'Best Book Ever'),
+        Review(3.9, 'Best Book Ever'),
+        Review(3.9, 'Best Book Ever'),
+        Review(3.9, 'Best Book Ever'),
+        Review(3.9, 'Best Book Ever'),
+        Review(3.9, 'Best Book Ever'),
+      ],
+    ),
     Book('The Alchemist', 'Paulo Coelho',
         'https://images-na.ssl-images-amazon.com/images/I/71aFt4+OTOL.jpg', [
       Review(4.5, 'This book is amazing! Highly recommended.'),
@@ -69,11 +85,24 @@ class _BookListScreenState extends State<BookListScreen> {
       Review(4.0, 'A chilling and thought-provoking book.'),
       Review(5.0, 'One of the best books I have ever read.'),
     ]),
-    Book('Pride and Prejudice', 'Jane Austen',
-        'https://images-na.ssl-images-amazon.com/images/I/71aFt4+OTOL.jpg', [
-      Review(4.0, 'A classic romance novel.'),
-      Review(3.5, 'An enjoyable read, but not my favorite.'),
-    ]),
+    Book(
+        'Pride and Prejudice',
+        'Jane Austen',
+        'https://img.freepik.com/free-vector/digital-technology-background-with-abstract-wave-border_53876-117508.jpg',
+        [
+          Review(4.0, 'A classic romance novel.'),
+          Review(3.5, 'An enjoyable read, but not my favorite.'),
+          Review(3.5, 'An enjoyable read, but not my favorite.'),
+          Review(3.5, 'An enjoyable read, but not my favorite.'),
+          Review(3.5, 'An enjoyable read, but not my favorite.'),
+          Review(3.5, 'An enjoyable read, but not my favorite.'),
+          Review(3.5, 'An enjoyable read, but not my favorite.'),
+          Review(3.5, 'An enjoyable read, but not my favorite.'),
+          Review(3.5, 'An enjoyable read, but not my favorite.'),
+          Review(3.5, 'An enjoyable read, but not my favorite.'),
+          Review(3.5, 'An enjoyable read, but not my favorite.'),
+          Review(3.5, 'An enjoyable read, but not my favorite.'),
+        ]),
   ];
 
   List<Book> filteredBooks = [];
@@ -101,7 +130,10 @@ class _BookListScreenState extends State<BookListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
         actions: [
           IconButton(
               onPressed: () {
@@ -152,72 +184,47 @@ class _BookListScreenState extends State<BookListScreen> {
           ],
         ),
       ),
-      body: GridView.builder(
-        padding: EdgeInsets.all(16),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.75,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-        ),
-        itemCount: filteredBooks.length,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              print('clicked');
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) {
-                  return BookDetail(book: filteredBooks[index]);
-                }),
+      body: Stack(
+        children: [
+          SizedBox.expand(
+            child: Image.asset(
+              'assets/images/Background.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+          SizedBox(
+            height: 100,
+          ),
+          GridView.builder(
+            padding: EdgeInsets.fromLTRB(16, 100, 16, 16),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.65,
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+            ),
+            itemCount: filteredBooks.length,
+            itemBuilder: (BuildContext context, int index) {
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return BookDetail(book: filteredBooks[index]);
+                    }),
+                  );
+                },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  child: CachedNetworkImage(
+                    imageUrl: filteredBooks[index].imageUrl,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               );
             },
-            child: Card(
-              elevation: 4,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: CachedNetworkImage(
-                      imageUrl: filteredBooks[index].imageUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (context, url) =>
-                          CircularProgressIndicator(),
-                      errorWidget: (context, url, error) {
-                        print('error widget called');
-                        return Image.asset('assets/images/error_image.png');
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    filteredBooks[index].title,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    filteredBooks[index].author,
-                    style: TextStyle(fontSize: 14),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: 4),
-                  RatingBarIndicator(
-                    rating: filteredBooks[index].averageRating,
-                    itemBuilder: (context, index) => Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                    ),
-                    itemCount: 5,
-                    itemSize: 20,
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -248,9 +255,41 @@ class Review {
   Review(this.rating, this.text);
 }
 
-class BookDetail extends StatelessWidget {
+class BookDetail extends StatefulWidget {
   final Book book;
   BookDetail({required this.book});
+
+  @override
+  State<BookDetail> createState() => _BookDetailState();
+}
+
+class _BookDetailState extends State<BookDetail> {
+  final _scrollController = ScrollController();
+
+  final double _appBarMaxOpacity = 0.8;
+
+  final double _appBarMinOpacity = 0.0;
+
+  double _appBarOpacity = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    setState(() {
+      _appBarOpacity = (_scrollController.offset / 100)
+          .clamp(_appBarMinOpacity, _appBarMaxOpacity);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -259,31 +298,31 @@ class BookDetail extends StatelessWidget {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
-          '${book.title}',
+          '${widget.book.title}',
         ),
         elevation: 0.0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black.withOpacity(_appBarOpacity),
         actions: [
           IconButton(
               onPressed: () {
-                Share.share('${book.title} by ${book.author}');
+                Share.share('${widget.book.title} by ${widget.book.author}');
               },
               icon: Icon(Icons.share))
         ],
       ),
       body: BlurredBackground(
-        img: book.imageUrl,
+        img: widget.book.imageUrl,
         child: SingleChildScrollView(
           child: Column(
             children: [
               Container(
-                margin: EdgeInsets.only(top: 80),
+                margin: EdgeInsets.only(top: 100),
                 height: 300,
                 width: 200,
                 child: ClipRRect(
                   borderRadius: BorderRadius.all(Radius.circular(20.0)),
                   child: CachedNetworkImage(
-                    imageUrl: book.imageUrl,
+                    imageUrl: widget.book.imageUrl,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -296,7 +335,7 @@ class BookDetail extends StatelessWidget {
                   children: [
                     Center(
                       child: Text(
-                        book.title,
+                        widget.book.title,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 24,
@@ -307,7 +346,7 @@ class BookDetail extends StatelessWidget {
                     SizedBox(height: 0),
                     Center(
                       child: Text(
-                        '${book.author}',
+                        '${widget.book.author}',
                         style: TextStyle(fontSize: 18),
                         textAlign: TextAlign.center,
                       ),
@@ -327,11 +366,11 @@ class BookDetail extends StatelessWidget {
                 padding: EdgeInsets.only(top: 0),
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: book.reviews.length,
+                itemCount: widget.book.reviews.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
-                    title: Text('${book.reviews[index].rating} stars'),
-                    subtitle: Text(book.reviews[index].text),
+                    title: Text('${widget.book.reviews[index].rating} stars'),
+                    subtitle: Text(widget.book.reviews[index].text),
                   );
                 },
               ),
