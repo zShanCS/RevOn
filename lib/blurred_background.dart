@@ -21,9 +21,12 @@ class BlurredBackground extends StatelessWidget {
     return Stack(
       children: [
         SizedBox.expand(child: tryImg(img)),
-        BackdropFilter(
-          filter: ui.ImageFilter.blur(sigmaX: sigmaX, sigmaY: sigmaY),
-          child: child,
+        ColoredBox(
+          color: Colors.black.withOpacity(0.3),
+          child: BackdropFilter(
+            filter: ui.ImageFilter.blur(sigmaX: sigmaX, sigmaY: sigmaY),
+            child: child,
+          ),
         ),
       ],
     );

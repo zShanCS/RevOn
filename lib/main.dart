@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:revon/blurred_background.dart';
+import 'package:share/share.dart';
 
 void main() {
   runApp(BookReviewsApp());
@@ -222,81 +223,6 @@ class _BookListScreenState extends State<BookListScreen> {
   }
 }
 
-class BookDetailScreen extends StatelessWidget {
-  final Book book;
-
-  BookDetailScreen({super.key, required this.book});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      key: key,
-      appBar: AppBar(
-        title: Text(book.title),
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-      ),
-      body: SingleChildScrollView(
-        child: BlurredBackground(
-          img: book.imageUrl,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 16),
-              Center(
-                child: CachedNetworkImage(
-                  imageUrl: book.imageUrl,
-                  fit: BoxFit.cover,
-                  height: 300,
-                  width: 200,
-                  placeholder: (context, url) => CircularProgressIndicator(),
-                  errorWidget: (context, url, error) {
-                    return Image.asset('assets/images/error_image.png');
-                  },
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                book.title,
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'by ${book.author}',
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Reviews:',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-              SizedBox(height: 8),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: book.reviews.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text('${book.reviews[index].rating} stars'),
-                    subtitle: Text(book.reviews[index].text),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class Book {
   final String title;
   final String author;
@@ -330,31 +256,35 @@ class BookDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
           '${book.title}',
         ),
         elevation: 0.0,
+        backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+              onPressed: () {
+                Share.share('${book.title} by ${book.author}');
+              },
+              icon: Icon(Icons.share))
+        ],
       ),
       body: BlurredBackground(
         img: book.imageUrl,
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AspectRatio(
-                aspectRatio: 1,
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: CachedNetworkImageProvider(
-                        book.imageUrl,
-                        errorListener: () {
-                          print('image failed to load');
-                        },
-                      ),
-                      fit: BoxFit.cover,
-                    ),
+              Container(
+                margin: EdgeInsets.only(top: 80),
+                height: 300,
+                width: 200,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                  child: CachedNetworkImage(
+                    imageUrl: book.imageUrl,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
@@ -364,21 +294,37 @@ class BookDetail extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      book.title,
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    Center(
+                      child: Text(
+                        book.title,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                    SizedBox(height: 10),
-                    Text(
-                      'by ${book.author}',
-                      style: TextStyle(fontSize: 18),
+                    SizedBox(height: 0),
+                    Center(
+                      child: Text(
+                        '${book.author}',
+                        style: TextStyle(fontSize: 18),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
+                    SizedBox(height: 20),
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              Text(
+                'Reviews',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               ListView.builder(
+                padding: EdgeInsets.only(top: 0),
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: book.reviews.length,
