@@ -43,6 +43,11 @@ class _BookDetailState extends State<BookDetail> {
     });
   }
 
+  _calcPositiveReviewsPercentage(List<double> reviews) {
+    final pos = reviews.where((element) => element > 3.0);
+    return ((pos.length / reviews.length) * 100).ceil();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,11 +112,61 @@ class _BookDetailState extends State<BookDetail> {
                   ],
                 ),
               ),
-              Text(
-                'Reviews',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Reviews',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            numberBullet(widget.book.reviews.length)
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Text(
+                              '${_calcPositiveReviewsPercentage(widget.book.reviews.map((e) => e.rating).toList())}% Positive',
+                              style: TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    TextButton.icon(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(
+                            Colors.white.withOpacity(0.3),
+                          ),
+                          foregroundColor:
+                              MaterialStateProperty.all(Colors.white),
+                        ),
+                        onPressed: () {},
+                        icon: Icon(Icons.edit_square, size: 15),
+                        label: Text(
+                          'Write Review',
+                          style: TextStyle(fontSize: 12),
+                        ))
+                  ],
                 ),
               ),
               ListView.builder(
@@ -135,5 +190,37 @@ class _BookDetailState extends State<BookDetail> {
         ),
       ),
     );
+  }
+
+  Container numberBullet(int len) {
+    return Container(
+      width: 25.0,
+      height: 25.0,
+      decoration: BoxDecoration(
+        color: Colors.grey.withOpacity(0.3),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Text(
+          _getReviewCountText(len),
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 10.0,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+String _getReviewCountText(int len) {
+  int reviewCount = len;
+  if (reviewCount < 10) {
+    return reviewCount.toString();
+  } else if (reviewCount >= 10 && reviewCount <= 99) {
+    return reviewCount.toString();
+  } else {
+    return '99+';
   }
 }
