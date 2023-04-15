@@ -6,6 +6,10 @@ import 'package:revon/models.dart';
 import 'package:revon/blurred_background.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:intl/intl.dart';
+import 'dart:ui' as ui;
+import 'package:revon/writeReview.dart';
+
 class BookDetail extends StatefulWidget {
   final Book book;
   BookDetail({required this.book});
@@ -15,34 +19,6 @@ class BookDetail extends StatefulWidget {
 }
 
 class _BookDetailState extends State<BookDetail> {
-  final _scrollController = ScrollController();
-
-  final double _appBarMaxOpacity = 0.8;
-
-  final double _appBarMinOpacity = 0.0;
-
-  double _appBarOpacity = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    setState(() {
-      print('appbar opacity updated');
-      _appBarOpacity = (_scrollController.offset / 100)
-          .clamp(_appBarMinOpacity, _appBarMaxOpacity);
-    });
-  }
-
   _calcPositiveReviewsPercentage(List<double> reviews) {
     final pos = reviews.where((element) => element > 3.0);
     return ((pos.length / reviews.length) * 100).ceil();
@@ -58,7 +34,7 @@ class _BookDetailState extends State<BookDetail> {
         //   '${widget.book.title}',
         // ),
         elevation: 0.0,
-        backgroundColor: Colors.black.withOpacity(_appBarOpacity),
+        backgroundColor: Colors.black.withOpacity(0),
         actions: [
           IconButton(
               onPressed: () {
@@ -76,11 +52,15 @@ class _BookDetailState extends State<BookDetail> {
                 margin: EdgeInsets.only(top: 100),
                 height: 300,
                 width: 200,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                  child: CachedNetworkImage(
-                    imageUrl: widget.book.imageUrl,
-                    fit: BoxFit.cover,
+                child: Hero(
+                  transitionOnUserGestures: true,
+                  tag: 'bigImg${widget.book.title}',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.book.imageUrl,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
@@ -128,7 +108,7 @@ class _BookDetailState extends State<BookDetail> {
                               'Reviews',
                               style: TextStyle(
                                 fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w400,
                               ),
                             ),
                             SizedBox(
@@ -144,7 +124,7 @@ class _BookDetailState extends State<BookDetail> {
                             Text(
                               '${_calcPositiveReviewsPercentage(widget.book.reviews.map((e) => e.rating).toList())}% Positive',
                               style: TextStyle(
-                                fontSize: 8,
+                                fontSize: 10,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -160,7 +140,14 @@ class _BookDetailState extends State<BookDetail> {
                           foregroundColor:
                               MaterialStateProperty.all(Colors.white),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return WriteReview(book: widget.book);
+                            }),
+                          );
+                        },
                         icon: Icon(Icons.edit_square, size: 15),
                         label: Text(
                           'Write Review',
@@ -176,11 +163,28 @@ class _BookDetailState extends State<BookDetail> {
                 itemCount: widget.book.reviews.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
-                    title: Text('${widget.book.reviews[index].rating} stars'),
+                    title: Row(
+                      children: [
+                        Text(
+                          widget.book.reviews[index].user.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        starBullet(widget.book.reviews[index].rating),
+                        Spacer(),
+                        Text(
+                          formatTime(widget.book.reviews[index].time),
+                          style: TextStyle(fontSize: 10),
+                        )
+                      ],
+                    ),
+                    // title: Text('${widget.book.reviews[index].rating} stars'),
                     subtitle: Text(
                       widget.book.reviews[index].text,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
+                      maxLines: 5,
                     ),
                   );
                 },
@@ -212,6 +216,43 @@ class _BookDetailState extends State<BookDetail> {
       ),
     );
   }
+
+  Container starBullet(double rating) {
+    return Container(
+      width: 40.0,
+      height: 15.0,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(10)),
+        color: Colors.grey.withOpacity(0.1),
+        shape: BoxShape.rectangle,
+      ),
+      child: Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              rating.toString(),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.normal,
+                fontSize: 9.0,
+              ),
+            ),
+            SizedBox(
+              width: 2,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 0.0),
+              child: Icon(
+                Icons.star,
+                size: 10,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 String _getReviewCountText(int len) {
@@ -222,5 +263,23 @@ String _getReviewCountText(int len) {
     return reviewCount.toString();
   } else {
     return '99+';
+  }
+}
+
+String formatTime(DateTime time) {
+  final now = DateTime.now();
+  final diff = now.difference(time);
+
+  if (diff.inSeconds < 60) {
+    return '${diff.inSeconds} seconds ago';
+  } else if (diff.inMinutes < 60) {
+    return '${diff.inMinutes} minute${diff.inMinutes > 1 ? 's' : ''} ago';
+  } else if (diff.inHours < 24) {
+    return '${diff.inHours} hours ago';
+  } else if (diff.inDays < 30) {
+    return '${diff.inDays} days ago';
+  } else {
+    final formatter = DateFormat('MMM dd, yyyy');
+    return formatter.format(time);
   }
 }

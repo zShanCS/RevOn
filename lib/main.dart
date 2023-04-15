@@ -149,11 +149,16 @@ class _BookListScreenState extends State<BookListScreen> {
                     }),
                   );
                 },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                  child: CachedNetworkImage(
-                    imageUrl: filteredBooks[index].imageUrl,
-                    fit: BoxFit.cover,
+                child: Hero(
+                  transitionOnUserGestures: true,
+                  tag: 'bigImg${filteredBooks[index].title}',
+                  child: ClipRRect(
+                    clipBehavior: Clip.antiAlias,
+                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    child: CachedNetworkImage(
+                      imageUrl: filteredBooks[index].imageUrl,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               );

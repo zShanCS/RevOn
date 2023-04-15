@@ -3,8 +3,16 @@ class Book {
   final String author;
   final String imageUrl;
   final List<Review> reviews;
+  final String overview;
+  final String authorIntro;
 
-  Book(this.title, this.author, this.imageUrl, this.reviews);
+  Book(
+      {required this.title,
+      required this.author,
+      required this.imageUrl,
+      required this.reviews,
+      required this.overview,
+      required this.authorIntro});
 
   double get averageRating {
     if (reviews.isEmpty) {
@@ -19,6 +27,26 @@ class Book {
 class Review {
   final double rating;
   final String text;
+  final User user;
+  DateTime time = DateTime.now().toUtc();
 
-  Review(this.rating, this.text);
+  Review(
+      {required this.rating,
+      required this.text,
+      required this.user,
+      DateTime? time})
+      : time = time ?? DateTime.now().toUtc(),
+        assert(time == null || time.isUtc);
+}
+
+class User {
+  final String id;
+  final String name;
+  final String? imageUrl; // optional parameter
+
+  User({
+    required this.id,
+    required this.name,
+    this.imageUrl,
+  });
 }
