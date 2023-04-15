@@ -1,4 +1,9 @@
+import 'package:uuid/uuid.dart';
+
+const uuid = Uuid();
+
 class Book {
+  final String id;
   final String title;
   final String author;
   final String imageUrl;
@@ -12,7 +17,8 @@ class Book {
       required this.imageUrl,
       required this.reviews,
       required this.overview,
-      required this.authorIntro});
+      required this.authorIntro})
+      : id = uuid.v4();
 
   double get averageRating {
     if (reviews.isEmpty) {
@@ -21,6 +27,12 @@ class Book {
     double totalRating =
         reviews.map((review) => review.rating).reduce((a, b) => a + b);
     return totalRating / reviews.length;
+  }
+
+  @override
+  String toString() {
+    // TODO: implement toString
+    return id;
   }
 }
 

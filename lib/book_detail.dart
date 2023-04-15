@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:revon/blurred_background.dart';
+import 'package:revon/utils.dart';
 import 'package:share/share.dart';
 import 'package:revon/models.dart';
 import 'package:revon/blurred_background.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:intl/intl.dart';
 import 'dart:ui' as ui;
@@ -20,6 +20,9 @@ class BookDetail extends StatefulWidget {
 
 class _BookDetailState extends State<BookDetail> {
   _calcPositiveReviewsPercentage(List<double> reviews) {
+    if (reviews.isEmpty) {
+      return 0;
+    }
     final pos = reviews.where((element) => element > 3.0);
     return ((pos.length / reviews.length) * 100).ceil();
   }
@@ -30,9 +33,6 @@ class _BookDetailState extends State<BookDetail> {
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        // title: Text(
-        //   '${widget.book.title}',
-        // ),
         elevation: 0.0,
         backgroundColor: Colors.black.withOpacity(0),
         actions: [
@@ -54,12 +54,14 @@ class _BookDetailState extends State<BookDetail> {
                 width: 200,
                 child: Hero(
                   transitionOnUserGestures: true,
-                  tag: 'bigImg${widget.book.title}',
+                  tag: 'bigImg${widget.book.id}',
                   child: ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                    child: CachedNetworkImage(
-                      imageUrl: widget.book.imageUrl,
+                    child: Image.network(
+                      widget.book.imageUrl,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(Icons.error),
                     ),
                   ),
                 ),
@@ -88,7 +90,31 @@ class _BookDetailState extends State<BookDetail> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 10),
+                    Text(
+                      'Overview',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      '${widget.book.overview}',
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'About the author',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Text(
+                      '${widget.book.authorIntro}',
+                      maxLines: 5,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    )
                   ],
                 ),
               ),
@@ -141,11 +167,9 @@ class _BookDetailState extends State<BookDetail> {
                               MaterialStateProperty.all(Colors.white),
                         ),
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) {
-                              return WriteReview(book: widget.book);
-                            }),
+                          Navigator.of(context).push(
+                            createPageRoute(WriteReview(book: widget.book),
+                                changeBehavior: false),
                           );
                         },
                         icon: Icon(Icons.edit_square, size: 15),
@@ -166,7 +190,9 @@ class _BookDetailState extends State<BookDetail> {
                     title: Row(
                       children: [
                         Text(
-                          widget.book.reviews[index].user.name,
+                          widget.book.reviews[index].user.name.isNotEmpty
+                              ? widget.book.reviews[index].user.name
+                              : 'User',
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(

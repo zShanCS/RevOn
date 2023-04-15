@@ -58,7 +58,7 @@ final bookList = [
         'F. Scott Fitzgerald was an American novelist and short-story writer.',
   ),
   Book(
-    title: 'The Alchemist123',
+    title: 'The Alchemist',
     author: 'Paulo Coelho',
     imageUrl:
         'https://images-na.ssl-images-amazon.com/images/I/71aFt4+OTOL.jpg',
@@ -82,7 +82,7 @@ final bookList = [
     title: 'To Kill a Mockingbird',
     author: 'Harper Lee',
     imageUrl:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Mimus_polyglottos1.jpg/1024px-Mimus_polyglottos1.jpg',
+        'https://media.wired.com/photos/593238fcedfced5820d0f04f/master/w_1600%2Cc_limit/to-kill-a-mockingbird.jpg',
     reviews: [
       Review(
         time: DateTime.now().toUtc(),
@@ -110,6 +110,57 @@ final bookList = [
         'The Great Gatsby is a 1925 novel by F. Scott Fitzgerald. The story takes place in 1922, during the Roaring Twenties, a time of prosperity in the United States after World War I. The book is widely considered to be a literary classic and a contender for the title "Great American Novel".',
     authorIntro:
         'Francis Scott Fitzgerald was an American novelist, essayist, screenwriter, and short-story writer.',
+  ),
+  Book(
+    title: 'The Catcher in the Rye',
+    author: 'J.D. Salinger',
+    imageUrl:
+        'https://cdn.britannica.com/94/181394-050-2F76F7EE/Reproduction-cover-edition-The-Catcher-in-the.jpg',
+    reviews: [
+      Review(
+        rating: 4.5,
+        text: 'A classic coming-of-age novel. Highly recommended.',
+        user: User(id: '1', name: 'Alice'),
+        time: DateTime.utc(2022, 12, 25),
+      ),
+      Review(
+        rating: 3.5,
+        text: 'It was an okay book, not my favorite.',
+        user: User(id: '2', name: 'Bob'),
+        time: DateTime.utc(2023, 1, 10),
+      ),
+    ],
+    overview: 'A classic novel about teenage angst and alienation.',
+    authorIntro:
+        'J.D. Salinger was an American writer best known for his novel The Catcher in the Rye.',
+  ),
+  Book(
+    title: 'The Stranger',
+    author: 'Albert Camus',
+    imageUrl: 'https://cdn.quotesgram.com/img/41/55/928034734-7685938_1_l.jpg',
+    reviews: [
+      Review(
+        rating: 4.0,
+        text: 'A thought-provoking book that explores the meaning of life.',
+        user: User(id: '3', name: 'Charlie'),
+        time: DateTime.utc(2023, 3, 15),
+      ),
+    ],
+    overview:
+        'A philosophical novel about an emotionally detached man who commits a murder.',
+    authorIntro:
+        'Albert Camus was a French philosopher and writer known for his existentialist themes in his works.',
+  ),
+  Book(
+    title: 'The Sun Also Rises',
+    author: 'Ernest Hemingway',
+    imageUrl:
+        'https://d28hgpri8am2if.cloudfront.net/book_images/onix/cvr9781645178569/the-sun-also-rises-and-other-works-9781645178569_hr.jpg',
+    reviews: [],
+    overview:
+        'A novel about a group of American and British expatriates who travel from Paris to Pamplona for the Running of the Bulls.',
+    authorIntro:
+        'Ernest Hemingway was an American novelist, short story writer, and journalist.',
   ),
   Book(
       title: 'The Alchemist',

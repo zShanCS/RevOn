@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:revon/blurred_background.dart';
 
 import 'dart:ui' as ui;
@@ -37,43 +36,47 @@ class WriteReview extends StatelessWidget {
                   children: [
                     Container(
                       alignment: Alignment.center,
-                      height: 120,
-                      width: 60,
+                      height: 150,
+                      width: 100,
                       child: Hero(
                         transitionOnUserGestures: true,
-                        tag: 'bigImg${book.title}',
+                        tag: 'bigImg${book.id}',
                         child: ClipRRect(
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          child: CachedNetworkImage(
-                            imageUrl: book.imageUrl,
+                          child: Image.network(
+                            book.imageUrl,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Icon(Icons.error),
                           ),
                         ),
                       ),
                     ),
                     SizedBox(width: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                    Flexible(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Center(
-                            child: Text(
-                              book.title,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          Text(
+                            book.title,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                           SizedBox(height: 0),
-                          Center(
-                            child: Text(
-                              '${book.author}',
-                              style: TextStyle(fontSize: 18),
-                              textAlign: TextAlign.center,
-                            ),
+                          Text(
+                            '${book.author}',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            '${book.overview}',
+                            maxLines: 5,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: 12),
                           ),
                           SizedBox(height: 10),
                         ],
@@ -81,12 +84,15 @@ class WriteReview extends StatelessWidget {
                     ),
                   ],
                 ),
+                SizedBox(
+                  height: 20,
+                ),
                 Center(
                   child: Text(
-                    'Write a Review',
+                    "Share your thoughts about this book",
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13.0,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 11.0,
                     ),
                   ),
                 ),

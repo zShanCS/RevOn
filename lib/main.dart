@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:revon/blurred_background.dart';
 import 'package:revon/data.dart';
+import 'package:revon/utils.dart';
 import 'package:share/share.dart';
 import 'package:revon/models.dart';
 import 'package:revon/blurred_background.dart';
@@ -63,6 +63,7 @@ class _BookListScreenState extends State<BookListScreen> {
   void initState() {
     super.initState();
     filteredBooks = books;
+    print(filteredBooks);
   }
 
   @override
@@ -142,24 +143,20 @@ class _BookListScreenState extends State<BookListScreen> {
             itemBuilder: (BuildContext context, int index) {
               return GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      return BookDetail(book: filteredBooks[index]);
-                    }),
+                  Navigator.of(context).push(
+                    createPageRoute(
+                      BookDetail(book: filteredBooks[index]),
+                      changeBehavior: true,
+                    ),
                   );
                 },
                 child: Hero(
                   transitionOnUserGestures: true,
-                  tag: 'bigImg${filteredBooks[index].title}',
+                  tag: 'bigImg${filteredBooks[index].id}',
                   child: ClipRRect(
-                    clipBehavior: Clip.antiAlias,
-                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                    child: CachedNetworkImage(
-                      imageUrl: filteredBooks[index].imageUrl,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                      clipBehavior: Clip.antiAlias,
+                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                      child: _generateImage(filteredBooks[index].imageUrl)),
                 ),
               );
             },
@@ -167,5 +164,18 @@ class _BookListScreenState extends State<BookListScreen> {
         ],
       ),
     );
+  }
+}
+
+dynamic _generateImage(link) {
+  try {
+    dynamic c = Image.network(
+      link,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+    );
+    return c;
+  } catch (e) {
+    return Text('Image Not loading');
   }
 }

@@ -1,6 +1,5 @@
 import 'dart:ui' as ui;
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class BlurredBackground extends StatelessWidget {
@@ -20,7 +19,7 @@ class BlurredBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        SizedBox.expand(child: tryImg(img)),
+        SizedBox.expand(child: imageOrBlurred(img)),
         ColoredBox(
           color: Colors.black.withOpacity(0.3),
           child: BackdropFilter(
@@ -33,16 +32,14 @@ class BlurredBackground extends StatelessWidget {
   }
 }
 
-Widget tryImg(url) {
+Widget imageOrBlurred(url) {
   try {
-    final c = CachedNetworkImage(
-      imageUrl: url,
+    final c = Image.network(
+      url,
+      errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
       fit: BoxFit.cover,
       height: 300,
       width: 200,
-      errorWidget: (context, url, error) {
-        return Icon(Icons.error);
-      },
     );
     return c;
   } catch (e) {
