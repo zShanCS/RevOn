@@ -4,7 +4,7 @@ import 'package:revon/blurred_background.dart';
 
 import 'dart:ui' as ui;
 
-import 'package:revon/models.dart';
+import 'models/models.dart';
 
 class WriteReview extends StatelessWidget {
   final Book book;

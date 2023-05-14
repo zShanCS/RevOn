@@ -3,12 +3,13 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:revon/blurred_background.dart';
 import 'package:revon/utils.dart';
 import 'package:share/share.dart';
-import 'package:revon/models.dart';
 import 'package:revon/blurred_background.dart';
 
 import 'package:intl/intl.dart';
 import 'dart:ui' as ui;
 import 'package:revon/writeReview.dart';
+
+import 'models/models.dart';
 
 class BookDetail extends StatefulWidget {
   final Book book;

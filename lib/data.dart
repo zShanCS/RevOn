@@ -1,4 +1,4 @@
-import 'package:revon/models.dart';
+import 'package:revon/models/models.dart';
 
 final bookList = [
   Book(
