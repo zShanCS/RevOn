@@ -24,8 +24,8 @@ class Book {
 
   factory Book.fromFirestore(DocumentSnapshot snapshot) {
     Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-    print('\n\n\n Data loaded from firestore');
-    print(data);
+    // print('\n\n\n Data loaded from firestore');
+    // print(data);
     List<dynamic> reviewsData = data['reviews'] ?? [];
     List<Review> reviews =
         reviewsData.map((reviewData) => Review.fromMap(reviewData)).toList();
@@ -74,6 +74,13 @@ class Review {
       DateTime? time})
       : time = time ?? DateTime.now().toUtc(),
         assert(time == null || time.isUtc);
+
+  toMap() {}
+
+  @override
+  String toString() {
+    return '$rating: $text';
+  }
 }
 
 class User {

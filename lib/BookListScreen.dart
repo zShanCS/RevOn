@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:revon/utils.dart';
 
 import 'BooksProvider.dart';
-import 'book_detail.dart';
+import 'BookDetail.dart';
 import 'data.dart';
 import 'models/models.dart';
 
 class BookListScreen extends StatefulWidget {
-  final List<Book> books;
-  const BookListScreen({super.key, required this.books});
+  const BookListScreen({
+    super.key,
+  });
 
   @override
   _BookListScreenState createState() => _BookListScreenState();
@@ -28,18 +29,22 @@ class _BookListScreenState extends State<BookListScreen> {
   }
 
   void _focusOnSearch() {
-    FocusScope.of(context).requestFocus(_searchFocusNode);
+    _searchFocusNode.requestFocus();
   }
 
   @override
   void initState() {
     super.initState();
-    filteredBooks = widget.books;
+    filteredBooks = [];
     print(filteredBooks);
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Book> books = BooksProvider.of(context)!.books;
+    setState(() {
+      filteredBooks = books;
+    });
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -52,7 +57,7 @@ class _BookListScreenState extends State<BookListScreen> {
                   if (searchVisible) {
                     //search was visible before => means we are closing search now => reset filter.
                     searchController.clear();
-                    filteredBooks = widget.books;
+                    filteredBooks = books;
                   } else {
                     //search was not visible => means we openend the search => bring search box into focus
                     _focusOnSearch();
@@ -82,7 +87,7 @@ class _BookListScreenState extends State<BookListScreen> {
                   onChanged: (text) {
                     text = text.toLowerCase();
                     setState(() {
-                      filteredBooks = widget.books.where((book) {
+                      filteredBooks = books.where((book) {
                         var title = book.title.toLowerCase();
                         var author = book.author.toLowerCase();
                         return title.contains(text) || author.contains(text);
@@ -117,7 +122,7 @@ class _BookListScreenState extends State<BookListScreen> {
                 onTap: () {
                   Navigator.of(context).push(
                     createPageRoute(
-                      BookDetail(book: filteredBooks[index]),
+                      BookDetail(bookId: filteredBooks[index].id),
                       changeBehavior: true,
                     ),
                   );
@@ -126,9 +131,15 @@ class _BookListScreenState extends State<BookListScreen> {
                   transitionOnUserGestures: true,
                   tag: 'bigImg${filteredBooks[index].id}',
                   child: ClipRRect(
-                      clipBehavior: Clip.antiAlias,
-                      borderRadius: BorderRadius.all(Radius.circular(20.0)),
-                      child: _generateImage(filteredBooks[index].imageUrl)),
+                    clipBehavior: Clip.antiAlias,
+                    borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                    child: Image.network(
+                      filteredBooks[index].imageUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(Icons.error),
+                    ),
+                  ),
                 ),
               );
             },
@@ -136,18 +147,5 @@ class _BookListScreenState extends State<BookListScreen> {
         ],
       ),
     );
-  }
-}
-
-dynamic _generateImage(link) {
-  try {
-    dynamic c = Image.network(
-      link,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
-    );
-    return c;
-  } catch (e) {
-    return Text('Image Not loading');
   }
 }

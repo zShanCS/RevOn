@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'controller/firestore_controller.dart';
 import 'models/models.dart';
 
 class BooksProvider extends InheritedWidget {
@@ -17,18 +18,15 @@ class BooksProvider extends InheritedWidget {
   }
 
   Future<void> fetchBooks() async {
-    final QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('books').get();
-
-    final List<Book> books = snapshot.docs
-        .map((QueryDocumentSnapshot document) => Book.fromFirestore(document))
-        .toList();
-
-    this.books.addAll(books);
+    List<Book> myBooks = await getBooksFromFireStore();
+    books.clear();
+    this.books.addAll(myBooks);
+    print('all books updated');
+    print(this.books);
   }
 
   @override
   bool updateShouldNotify(BooksProvider oldWidget) {
-    return true;
+    return books != oldWidget.books;
   }
 }

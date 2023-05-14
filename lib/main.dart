@@ -6,7 +6,7 @@ import 'package:revon/data.dart';
 import 'package:revon/utils.dart';
 import 'package:share/share.dart';
 import 'package:revon/blurred_background.dart';
-import 'package:revon/book_detail.dart';
+import 'package:revon/BookDetail.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'BookListScreen.dart';
@@ -70,10 +70,12 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BooksProvider(
+    print('My App build function called');
+    final BooksProvider booksProvider = BooksProvider(
       books: [],
       child: RevOnApp(),
     );
+    return booksProvider;
   }
 }
 
@@ -95,9 +97,7 @@ class RevOnApp extends StatelessWidget {
                 bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'Poppins'),
               ),
             ),
-            home: BookListScreen(
-              books: BooksProvider.of(context)!.books,
-            ),
+            home: BookListScreen(),
           );
         } else {
           return Center(child: CircularProgressIndicator());

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:revon/BooksProvider.dart';
 import 'package:revon/blurred_background.dart';
 import 'package:revon/utils.dart';
 import 'package:share/share.dart';
@@ -7,13 +8,13 @@ import 'package:revon/blurred_background.dart';
 
 import 'package:intl/intl.dart';
 import 'dart:ui' as ui;
-import 'package:revon/writeReview.dart';
+import 'package:revon/WriteReview.dart';
 
 import 'models/models.dart';
 
 class BookDetail extends StatefulWidget {
-  final Book book;
-  BookDetail({required this.book});
+  final String bookId;
+  BookDetail({required this.bookId});
 
   @override
   State<BookDetail> createState() => _BookDetailState();
@@ -30,6 +31,17 @@ class _BookDetailState extends State<BookDetail> {
 
   @override
   Widget build(BuildContext context) {
+    Book mybook = BooksProvider.of(context)
+            ?.books
+            .firstWhere((element) => element.id == widget.bookId) ??
+        Book(
+            title: '',
+            author: 'author',
+            imageUrl: 'imageUrl',
+            reviews: [],
+            overview: 'overview',
+            authorIntro: 'authorIntro');
+    print(mybook.reviews);
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
@@ -39,13 +51,13 @@ class _BookDetailState extends State<BookDetail> {
         actions: [
           IconButton(
               onPressed: () {
-                Share.share('${widget.book.title} by ${widget.book.author}');
+                Share.share('${mybook.title} by ${mybook.author}');
               },
               icon: Icon(Icons.share))
         ],
       ),
       body: BlurredBackground(
-        img: widget.book.imageUrl,
+        img: mybook.imageUrl,
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -55,11 +67,11 @@ class _BookDetailState extends State<BookDetail> {
                 width: 200,
                 child: Hero(
                   transitionOnUserGestures: true,
-                  tag: 'bigImg${widget.book.id}',
+                  tag: 'bigImg${mybook.id}',
                   child: ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(20.0)),
                     child: Image.network(
-                      widget.book.imageUrl,
+                      mybook.imageUrl,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) =>
                           Icon(Icons.error),
@@ -75,7 +87,7 @@ class _BookDetailState extends State<BookDetail> {
                   children: [
                     Center(
                       child: Text(
-                        widget.book.title,
+                        mybook.title,
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 24,
@@ -86,7 +98,7 @@ class _BookDetailState extends State<BookDetail> {
                     SizedBox(height: 0),
                     Center(
                       child: Text(
-                        '${widget.book.author}',
+                        '${mybook.author}',
                         style: TextStyle(fontSize: 18),
                         textAlign: TextAlign.center,
                       ),
@@ -97,7 +109,7 @@ class _BookDetailState extends State<BookDetail> {
                       style: TextStyle(fontSize: 16),
                     ),
                     Text(
-                      '${widget.book.overview}',
+                      '${mybook.overview}',
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: 12),
@@ -108,7 +120,7 @@ class _BookDetailState extends State<BookDetail> {
                       style: TextStyle(fontSize: 16),
                     ),
                     Text(
-                      '${widget.book.authorIntro}',
+                      '${mybook.authorIntro}',
                       maxLines: 5,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: 12),
@@ -141,7 +153,7 @@ class _BookDetailState extends State<BookDetail> {
                             SizedBox(
                               width: 10,
                             ),
-                            numberBullet(widget.book.reviews.length)
+                            numberBullet(mybook.reviews.length)
                           ],
                         ),
                         Row(
@@ -149,7 +161,7 @@ class _BookDetailState extends State<BookDetail> {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             Text(
-                              '${_calcPositiveReviewsPercentage(widget.book.reviews.map((e) => e.rating).toList())}% Positive',
+                              '${_calcPositiveReviewsPercentage(mybook.reviews.map((e) => e.rating).toList())}% Positive',
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
@@ -169,7 +181,7 @@ class _BookDetailState extends State<BookDetail> {
                         ),
                         onPressed: () {
                           Navigator.of(context).push(
-                            createPageRoute(WriteReview(book: widget.book),
+                            createPageRoute(WriteReview(bookId: mybook.id),
                                 changeBehavior: false),
                           );
                         },
@@ -185,31 +197,31 @@ class _BookDetailState extends State<BookDetail> {
                 padding: EdgeInsets.only(top: 0),
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: widget.book.reviews.length,
+                itemCount: mybook.reviews.length,
                 itemBuilder: (BuildContext context, int index) {
                   return ListTile(
                     title: Row(
                       children: [
                         Text(
-                          widget.book.reviews[index].user.name.isNotEmpty
-                              ? widget.book.reviews[index].user.name
+                          mybook.reviews[index].user.name.isNotEmpty
+                              ? mybook.reviews[index].user.name
                               : 'User',
                           overflow: TextOverflow.ellipsis,
                         ),
                         SizedBox(
                           width: 5,
                         ),
-                        starBullet(widget.book.reviews[index].rating),
+                        starBullet(mybook.reviews[index].rating),
                         Spacer(),
                         Text(
-                          formatTime(widget.book.reviews[index].time),
+                          formatTime(mybook.reviews[index].time),
                           style: TextStyle(fontSize: 10),
                         )
                       ],
                     ),
-                    // title: Text('${widget.book.reviews[index].rating} stars'),
+                    // title: Text('${mybook.reviews[index].rating} stars'),
                     subtitle: Text(
-                      widget.book.reviews[index].text,
+                      mybook.reviews[index].text,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 5,
                     ),
