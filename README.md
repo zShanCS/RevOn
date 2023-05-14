@@ -1,7 +1,7 @@
 # revon
 
-A new Flutter project.
-
+An aesthitically pleasing Book Review App. 
+ 
 ## Getting Started
 
 This project is a starting point for a Flutter application.
