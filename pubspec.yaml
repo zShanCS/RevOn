@@ -1,5 +1,5 @@
 name: revon
-description: A new Flutter project.
+description: Your next favorite book
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -38,6 +38,9 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   intl: ^0.18.0
+  firebase_core: ^2.12.0
+  cloud_firestore: ^4.7.0
+  
 
 dev_dependencies:
   flutter_test:

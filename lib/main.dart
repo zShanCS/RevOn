@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:revon/blurred_background.dart';
@@ -7,10 +8,54 @@ import 'package:share/share.dart';
 import 'package:revon/models.dart';
 import 'package:revon/blurred_background.dart';
 import 'package:revon/book_detail.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  // final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  // for (var book in bookList) {
+  //   firestore.collection('books').doc(book.id).set({
+  //     'title': book.title,
+  //     'author': book.author,
+  //     'image': book.imageUrl,
+  //     'overview': book.overview,
+  //     'authorIntro': book.authorIntro,
+  //   }).then((value) {
+  //     print('Added ${book.title} to Firestore');
+  //     // Add a new review for a book document in Firestore
+  //     for (var review in book.reviews) {
+  //       addReviewForBook(book.id, review);
+  //     }
+  //   }).catchError((error) => print('Error adding ${book.title}: $error'));
+  // }
+
   runApp(BookReviewsApp());
 }
+
+// void addReviewForBook(String bookId, Review review) {
+//   CollectionReference reviewsCollectionRef =
+//       FirebaseFirestore.instance.collection('books/$bookId/reviews');
+//   DocumentReference newReviewDocRef = reviewsCollectionRef.doc();
+
+//   Map<String, dynamic> reviewData = {
+//     'rating': review.rating,
+//     'text': review.text,
+//     'user': {
+//       'id': review.user.id,
+//       'name': review.user.name,
+//       'imageUrl': review.user.imageUrl,
+//     },
+//     'time': review.time.toUtc(),
+//   };
+
+//   newReviewDocRef
+//       .set(reviewData)
+//       .then((value) => print('Added review for book $bookId to Firestore'))
+//       .catchError(
+//           (error) => print('Error adding review for book $bookId: $error'));
+// }
 
 class BookReviewsApp extends StatelessWidget {
   @override

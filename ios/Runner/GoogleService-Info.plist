@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>533982941937-27eu8obdj069ad9s93uhccic272bs3af.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.533982941937-27eu8obdj069ad9s93uhccic272bs3af</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB43yKFF7Vs88DNQUefTZFRDoVzrbTFYVI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>533982941937</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.revon</string>
+	<key>PROJECT_ID</key>
+	<string>revon-f403f</string>
+	<key>STORAGE_BUCKET</key>
+	<string>revon-f403f.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:533982941937:ios:0e9d39060cc53aa26b8f50</string>
+</dict>
+</plist>
