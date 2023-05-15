@@ -1,16 +1,17 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:revon/BooksProvider.dart';
 import 'package:revon/blurred_background.dart';
 import 'package:revon/utils.dart';
 import 'package:share/share.dart';
-import 'package:revon/blurred_background.dart';
 
 import 'package:intl/intl.dart';
-import 'dart:ui' as ui;
 import 'package:revon/WriteReview.dart';
 
 import 'models/models.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class BookDetail extends StatefulWidget {
   final String bookId;
@@ -20,13 +21,69 @@ class BookDetail extends StatefulWidget {
   State<BookDetail> createState() => _BookDetailState();
 }
 
+enum TtsState { playing, stopped, paused, continued }
+
 class _BookDetailState extends State<BookDetail> {
+  late FlutterTts flutterTts;
+  bool refresh = true;
+  String? _newVoiceText;
+
+  TtsState ttsState = TtsState.stopped;
+
   _calcPositiveReviewsPercentage(List<double> reviews) {
     if (reviews.isEmpty) {
       return 0;
     }
     final pos = reviews.where((element) => element > 3.0);
     return ((pos.length / reviews.length) * 100).ceil();
+  }
+
+  bool get isAndroid => !kIsWeb && Platform.isAndroid;
+  @override
+  void initState() {
+    initTts();
+  }
+
+  initTts() {
+    flutterTts = FlutterTts();
+    if (isAndroid) {
+      flutterTts.setInitHandler(() {
+        setState(() {
+          print("TTS Initialized");
+        });
+      });
+    }
+  }
+
+  Future _speak() async {
+    // await flutterTts.setVolume(volume);
+    // await flutterTts.setSpeechRate(rate);
+    // await flutterTts.setPitch(pitch);
+
+    if (_newVoiceText != null) {
+      if (_newVoiceText!.isNotEmpty) {
+        setState(() {
+          ttsState = TtsState.playing;
+        });
+        await flutterTts.speak(_newVoiceText!);
+      }
+    }
+  }
+
+  Future _stop() async {
+    var result = await flutterTts.stop();
+    if (result == 1) setState(() => ttsState = TtsState.stopped);
+  }
+
+  Future _pause() async {
+    var result = await flutterTts.pause();
+    if (result == 1) setState(() => ttsState = TtsState.paused);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    flutterTts.stop();
   }
 
   late Book mybook;
@@ -47,7 +104,7 @@ class _BookDetailState extends State<BookDetail> {
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        elevation: 0.0,
+        // elevation: 0.0,
         backgroundColor: Colors.black.withOpacity(0),
         actions: [
           IconButton(
@@ -105,9 +162,27 @@ class _BookDetailState extends State<BookDetail> {
                       ),
                     ),
                     SizedBox(height: 10),
-                    Text(
-                      'Overview',
-                      style: TextStyle(fontSize: 16),
+                    Row(
+                      children: [
+                        Text(
+                          'Overview',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        IconButton(
+                            onPressed: () {
+                              if (ttsState == TtsState.playing) {
+                                _stop();
+                              } else {
+                                setState(() {
+                                  _newVoiceText = mybook.overview;
+                                });
+                                _speak();
+                              }
+                            },
+                            icon: Icon(ttsState == TtsState.playing
+                                ? Icons.pause
+                                : Icons.volume_up_rounded))
+                      ],
                     ),
                     Text(
                       '${mybook.overview}',
@@ -181,27 +256,19 @@ class _BookDetailState extends State<BookDetail> {
                               MaterialStateProperty.all(Colors.white),
                         ),
                         onPressed: () {
+                          if (ttsState == TtsState.playing) {
+                            _stop();
+                          }
                           Navigator.of(context)
                               .push(
                             createPageRoute(WriteReview(bookId: mybook.id),
                                 changeBehavior: false),
                           )
-                              .whenComplete(() {
-                            print('book details screen on top again');
+                              .then((value) {
+                            print('Book detail on top again');
                             setState(() {
-                              mybook = BooksProvider.of(context)
-                                      ?.books
-                                      .firstWhere((element) =>
-                                          element.id == widget.bookId) ??
-                                  Book(
-                                      title: '',
-                                      author: 'author',
-                                      imageUrl: 'imageUrl',
-                                      reviews: [],
-                                      overview: 'overview',
-                                      authorIntro: 'authorIntro');
+                              refresh = !refresh;
                             });
-                            print('changed reviews: ${mybook.reviews}');
                           });
                         },
                         icon: Icon(Icons.edit_square, size: 15),

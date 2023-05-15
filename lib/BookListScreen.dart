@@ -54,7 +54,7 @@ class _BookListScreenState extends State<BookListScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        // elevation: 0.0,
         actions: [
           IconButton(
               onPressed: () {
@@ -72,14 +72,21 @@ class _BookListScreenState extends State<BookListScreen> {
               },
               icon: searchVisible ? Icon(Icons.clear) : Icon(Icons.search)),
           IconButton(
-              onPressed: () async {
-                showLogoutConfirmationDialog(context);
-              },
-              icon: Icon(Icons.logout))
+            onPressed: () {
+              BooksProvider.of(context)?.fetchBooks(refreshFromFirestore: true);
+            },
+            icon: Icon(Icons.refresh),
+          ),
+          IconButton(
+            onPressed: () async {
+              showLogoutConfirmationDialog(context);
+            },
+            icon: Icon(Icons.logout),
+          ),
         ],
         title: Row(
           children: [
-            Text('RevOn'),
+            Visibility(visible: !searchVisible, child: Text('RevOn | Explore')),
             SizedBox(
               width: 10,
             ),

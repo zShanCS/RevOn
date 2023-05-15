@@ -245,8 +245,8 @@ class _WriteReviewState extends State<WriteReview> {
                                             'John Doe'))));
                             _showNotificationWithDefaultSound();
                             if (mounted) {
-                              print(BooksProvider.of(context)?.books);
-                              BooksProvider.of(context)
+                              // print(BooksProvider.of(context)?.books);
+                              await BooksProvider.of(context)
                                   ?.fetchBooks(refreshFromFirestore: true);
                               Navigator.of(context).pop();
                             }
