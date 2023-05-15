@@ -1,10 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:revon/LoginScreen.dart';
 import 'package:revon/utils.dart';
 
 import 'BooksProvider.dart';
 import 'BookDetail.dart';
 import 'data.dart';
-import 'models/models.dart';
+import 'models/models.dart' hide User;
+import 'LoginScreen.dart';
 
 class BookListScreen extends StatefulWidget {
   const BookListScreen({
@@ -18,6 +21,7 @@ class BookListScreen extends StatefulWidget {
 class _BookListScreenState extends State<BookListScreen> {
   List<Book> filteredBooks = [];
   bool searchVisible = false;
+  bool firstTimeRun = true;
   final FocusNode _searchFocusNode = FocusNode();
 
   TextEditingController searchController = TextEditingController();
@@ -43,7 +47,8 @@ class _BookListScreenState extends State<BookListScreen> {
   Widget build(BuildContext context) {
     List<Book> books = BooksProvider.of(context)!.books;
     setState(() {
-      filteredBooks = books;
+      if (firstTimeRun) filteredBooks = books;
+      firstTimeRun = false;
     });
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -65,7 +70,16 @@ class _BookListScreenState extends State<BookListScreen> {
                   searchVisible = !searchVisible;
                 });
               },
-              icon: searchVisible ? Icon(Icons.clear) : Icon(Icons.search))
+              icon: searchVisible ? Icon(Icons.clear) : Icon(Icons.search)),
+          IconButton(
+              onPressed: () async {
+                final FirebaseAuth _auth = FirebaseAuth.instance;
+                _auth.signOut();
+                Navigator.of(context).pushReplacement(
+                  createPageRoute(LoginScreen(), changeBehavior: false),
+                );
+              },
+              icon: Icon(Icons.logout))
         ],
         title: Row(
           children: [

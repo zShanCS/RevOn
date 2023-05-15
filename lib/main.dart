@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -106,9 +107,11 @@ class RevOnApp extends StatelessWidget {
 
 class FirstScreen extends StatelessWidget {
   Future<bool> isLoggedIn() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final User? user = await _auth.currentUser;
     // prefs.setBool('isLoggedIn', false);
-    return prefs.getBool('isLoggedIn') ?? false;
+    return user != null ? true : false;
   }
 
   @override

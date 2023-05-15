@@ -21,16 +21,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey = GlobalKey<FormState>();
   bool passwordVisible = true;
-  bool rememberMe = false;
+  bool signUpFirstTime = false;
   togglePasswordVisible() {
     setState(() {
       passwordVisible = !passwordVisible;
     });
   }
 
-  toggleRememberMe() {
+  toggleSignUp() {
     setState(() {
-      rememberMe = !rememberMe;
+      signUpFirstTime = !signUpFirstTime;
     });
   }
 
@@ -39,23 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  void registerUser(String email, String password) async {
-    // try {
-    UserCredential userCredential =
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    User? user = userCredential.user;
-    print(user);
-    // User registration successful
-    // Access user data using user.uid, user.email, etc.
-    // } catch (e) {
-    //   // Error occurred during user registration
-    //   print('Error registering user: $e');
-    // }
   }
 
   @override
@@ -124,20 +107,20 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextButton(
                     onPressed: () {
                       setState(() {
-                        rememberMe = !rememberMe;
+                        signUpFirstTime = !signUpFirstTime;
                       });
                     },
                     child: Row(
                       children: <Widget>[
                         Checkbox(
-                          value: rememberMe,
+                          value: signUpFirstTime,
                           onChanged: (value) {
                             setState(() {
-                              rememberMe = !rememberMe;
+                              signUpFirstTime = !signUpFirstTime;
                             });
                           },
                         ),
-                        const Text('Remember Me Okay?'),
+                        const Text('Sign Up. (Its my first time on app)'),
                       ],
                     ),
                   ),
@@ -145,31 +128,80 @@ class _LoginScreenState extends State<LoginScreen> {
                 ],
               ),
               ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
 // Register a new user with email and password
-                      registerUser(
-                          _emailController.text, _passwordController.text);
-                      SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
-                      await prefs.setBool('isLoggedIn', true);
-                      await prefs.setString('user', _emailController.text);
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const BookListScreen()),
+                    if (signUpFirstTime) {
+                      // sign up the user and move to next screen
+                      UserCredential userCredential = await FirebaseAuth
+                          .instance
+                          .createUserWithEmailAndPassword(
+                        email: _emailController.text,
+                        password: _passwordController.text,
                       );
+                      if (userCredential.user != null) {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        await prefs.setBool('isLoggedIn', true);
+                        await prefs.setString('user', _emailController.text);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const BookListScreen()),
+                        );
+                      } else {
+                        //failed to sign up
+                        showSnackBar(context, 'Failed to Sign Up');
+                      }
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Error Occurred')),
-                      );
+                      //try to login
+                      UserCredential userCreds = await FirebaseAuth.instance
+                          .signInWithEmailAndPassword(
+                              email: _emailController.text,
+                              password: _passwordController.text);
+                      if (userCreds.user != null) {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        await prefs.setBool('isLoggedIn', true);
+                        await prefs.setString('user', _emailController.text);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const BookListScreen()),
+                        );
+                      } else {
+                        showSnackBar(context,
+                            'Failed to login. Check email and password. Or Sign Up.');
+                      }
                     }
-                  },
-                  child: const Text('Login'))
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Error Occurred')),
+                    );
+                  }
+                },
+                child: Text(signUpFirstTime ? 'Sign Up' : 'Log In'),
+              )
             ],
           ),
         ),
       ),
     );
   }
+}
+
+showSnackBar(BuildContext context, String text) {
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      backgroundColor: Color.fromARGB(20, 0, 0, 0),
+      content: Center(
+        child: Text(
+          text,
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+      duration: Duration(seconds: 2), // set the duration for the message
+    ),
+  );
 }
