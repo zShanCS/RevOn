@@ -29,6 +29,7 @@ class _BookDetailState extends State<BookDetail> {
     return ((pos.length / reviews.length) * 100).ceil();
   }
 
+  late Book mybook;
   @override
   Widget build(BuildContext context) {
     Book mybook = BooksProvider.of(context)
@@ -180,10 +181,28 @@ class _BookDetailState extends State<BookDetail> {
                               MaterialStateProperty.all(Colors.white),
                         ),
                         onPressed: () {
-                          Navigator.of(context).push(
+                          Navigator.of(context)
+                              .push(
                             createPageRoute(WriteReview(bookId: mybook.id),
                                 changeBehavior: false),
-                          );
+                          )
+                              .whenComplete(() {
+                            print('book details screen on top again');
+                            setState(() {
+                              mybook = BooksProvider.of(context)
+                                      ?.books
+                                      .firstWhere((element) =>
+                                          element.id == widget.bookId) ??
+                                  Book(
+                                      title: '',
+                                      author: 'author',
+                                      imageUrl: 'imageUrl',
+                                      reviews: [],
+                                      overview: 'overview',
+                                      authorIntro: 'authorIntro');
+                            });
+                            print('changed reviews: ${mybook.reviews}');
+                          });
                         },
                         icon: Icon(Icons.edit_square, size: 15),
                         label: Text(

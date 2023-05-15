@@ -1,20 +1,15 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:revon/blurred_background.dart';
-import 'package:revon/data.dart';
-import 'package:revon/utils.dart';
-import 'package:share/share.dart';
-import 'package:revon/blurred_background.dart';
-import 'package:revon/BookDetail.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'BookListScreen.dart';
 import 'BooksProvider.dart';
-import 'models/models.dart';
+import 'LoginScreen.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp();
 
   // final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -82,6 +77,8 @@ class MyApp extends StatelessWidget {
 class RevOnApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    print(
+        'RevOn build called: the state of books before future builder: ${BooksProvider.of(context)!.books.length}');
     return FutureBuilder(
       future: BooksProvider.of(context)!.fetchBooks(),
       builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
@@ -91,16 +88,44 @@ class RevOnApp extends StatelessWidget {
             theme: ThemeData(
               // Define the default brightness and colors.
               brightness: Brightness.dark,
-              primaryColor: Colors.lightBlue[800],
+              primaryColor: Colors.white12,
               fontFamily: 'Poppins',
               textTheme: const TextTheme(
                 bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'Poppins'),
               ),
             ),
-            home: BookListScreen(),
+            home: FirstScreen(),
           );
         } else {
           return Center(child: CircularProgressIndicator());
+        }
+      },
+    );
+  }
+}
+
+class FirstScreen extends StatelessWidget {
+  Future<bool> isLoggedIn() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // prefs.setBool('isLoggedIn', false);
+    return prefs.getBool('isLoggedIn') ?? false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: isLoggedIn(),
+      builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        if (snapshot.hasData) {
+          bool isLoggedIn = snapshot.data!;
+          print('user Loggedd In: $isLoggedIn');
+          return isLoggedIn ? BookListScreen() : LoginScreen();
+        } else {
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
       },
     );
