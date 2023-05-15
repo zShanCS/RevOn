@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     
     <application
-        android:label="revon"
+        android:label="RevOn"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

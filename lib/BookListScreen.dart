@@ -73,11 +73,7 @@ class _BookListScreenState extends State<BookListScreen> {
               icon: searchVisible ? Icon(Icons.clear) : Icon(Icons.search)),
           IconButton(
               onPressed: () async {
-                final FirebaseAuth _auth = FirebaseAuth.instance;
-                _auth.signOut();
-                Navigator.of(context).pushReplacement(
-                  createPageRoute(LoginScreen(), changeBehavior: false),
-                );
+                showLogoutConfirmationDialog(context);
               },
               icon: Icon(Icons.logout))
         ],
@@ -160,6 +156,57 @@ class _BookListScreenState extends State<BookListScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  void showLogoutConfirmationDialog(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 200,
+          padding: EdgeInsets.all(20),
+          color: Color.fromARGB(50, 0, 0, 0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Are you sure you want to logout?',
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      child: Text('Cancel'),
+                      onPressed: () {
+                        Navigator.pop(context); // Dismiss the bottom sheet
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      child: Text('Logout'),
+                      onPressed: () {
+                        // Perform logout action here
+                        final FirebaseAuth _auth = FirebaseAuth.instance;
+                        _auth.signOut();
+                        Navigator.pop(context);
+                        Navigator.of(context).pushReplacement(
+                          createPageRoute(LoginScreen(), changeBehavior: false),
+                        );
+                        // Navigator.pop(context); // Dismiss the bottom sheet
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
